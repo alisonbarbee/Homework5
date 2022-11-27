@@ -9,7 +9,7 @@ output: word_document
 knitr::opts_chunk$set(echo = TRUE, error = FALSE)
 ```
 
-#Adding the data into the document - NEXT COMMIT
+
 
 ```{r data}
 library(readr)
@@ -18,7 +18,7 @@ homicide_data <- read_csv("data/homicide-data.csv")
 ```
 
 
-Pick one city in the data. 
+#Pick one city in the data. 
 
 ```{r Los Angeles}
 
