@@ -42,6 +42,7 @@ library(sf)
 library(tigris)
 library(ggplot2)
 library(viridis)
+library(MAP)
 
 ca_counties <- counties(state = "CA", cb = TRUE, class = "sf")
 
@@ -53,24 +54,29 @@ ggplot() +
 ```{r}
 
 ca_homicides <- losAngeles %>% 
-  select(uid, reported_date, victim_race, lat, lon, disposition) 
+  select(uid, reported_date, victim_race, lat, lon, disposition)
+  
 
 
-ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat")) %>% 
-  gather(key = "key", value = "value", 
-         -reported_date, -uid) %>% 
-  separate(key, c("time", "key")) %>% 
-  spread(key = key, value = value)
+ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat")) %>%
+  st_set_crs(4269)
+  
+filter(.data = ca_homicides, !missing(victim_race))
+
 ```
 
 
 
 ```{r}
-ggplot() + 
-  geom_sf(data = ca_counties, color = "lightgray") +
-  geom_sf(data = ca_homicides, aes(color = victim_race, shape = disposition)) + 
-  scale_color_viridis(name = "Race Groups") 
 
+ggplot() +
+  geom_sf(data = ca_counties, color = "lightgray") +
+  geom_sf(data = ca_homicides, aes(color = victim_race))
+
+
+          + 
+  scale_color_viridis(name = "Race Groups") 
+color = victim_race, shape = disposition
 ```
 
 ```{r}
