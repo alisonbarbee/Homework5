@@ -10,22 +10,20 @@ knitr::opts_chunk$set(echo = TRUE, error = FALSE)
 ```
 
 
-
 ```{r data}
 library(readr)
+
 homicide_data <- read_csv("data/homicide-data.csv")
-
 ```
-
 
 #Pick one city in the data. 
 
 ```{r Los Angeles}
+library(tidyverse)
 
-LosAngeles <- homicides %>%
-  mutate(city_name = str_c(homicides$city, homicides$state, sep = ", ")) %>%
+losAngeles <- homicide_data %>%
+  mutate(city_name = str_c(homicide_data$city, homicide_data$state, sep = ", ")) %>%
   filter(city_name == "Los Angeles, CA")
-
 ```
 
 Create a map showing the locations of the homicides in that city, using the sf framework discussed in class.
@@ -35,5 +33,45 @@ Use tigris to download boundaries for some sub-city geography (e.g., tracts, blo
 Use different facets for solved versus unsolved homicides and different colors to show the three race groups with the highest number of homicides for that city (you may find the fct_lump function from forcats useful for this).
 
 
+#Mapping it out
+
+I used tigris to set county boundaries within California to represent the different subdivisions within the state. 
+
+```{r Map, tigris_use_cache = TRUE}
+library(sf)
+library(tigris)
+library(ggplot2)
+library(viridis)
+
+ca_counties <- counties(state = "CA", cb = TRUE, class = "sf")
+
+ggplot() + 
+  geom_sf(data = ca_counties, color = "lightgray")
+
+```
+
+```{r}
+
+ca_homicides <- losAngeles %>% 
+  select(uid, reported_date, victim_race, lat, lon, disposition) %>% 
+  gather(key = "key", value = "value", 
+         -reported_date, -uid) %>% 
+  separate(key, c("time", "key")) %>% 
+  spread(key = key, value = value)
+
+ca_homicides <- st_as_sf(losAngeles, coords = c("lon", "lat"))
+
+```
 
 
+```{r}
+ggplot() + 
+  geom_sf(data = ca_counties, color = "lightgray") +
+  geom_sf(data = ca_homicides, aes(color = victim_race, shape = disposition)) + 
+  scale_color_viridis(name = "Race Groups") 
+
+```
+
+```{r}
+
+```
