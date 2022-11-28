@@ -50,6 +50,16 @@ ggplot() +
   geom_sf(data = ca_counties, color = "lightgray")
 
 ```
+```{r, LA}
+
+la_county <- counties(state = "CA", cb = TRUE, class = "sf") %>%
+  
+
+
+ggplot() + 
+  geom_sf(data = la_county, color = "lightgray")
+
+```
 
 ```{r}
 
