@@ -56,9 +56,7 @@ ca_homicides <- losAngeles %>%
   select(uid, reported_date, victim_race, lat, lon, disposition) 
 
 
-ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat"))
-
-%>% 
+ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat")) %>% 
   gather(key = "key", value = "value", 
          -reported_date, -uid) %>% 
   separate(key, c("time", "key")) %>% 
