@@ -58,8 +58,8 @@ ca_homicides <- losAngeles %>%
   
 
 
-ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat")) %>%
-  st_set_crs(4269)
+ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat"))
+  
   
 filter(.data = ca_homicides, !missing(victim_race))
 
@@ -70,13 +70,17 @@ filter(.data = ca_homicides, !missing(victim_race))
 ```{r}
 
 ggplot() +
-  geom_sf(data = ca_counties, color = "lightgray") +
-  geom_sf(data = ca_homicides, aes(color = victim_race))
+  geom_sf(data = ca_counties, color = "lightgray", fill = "gray") +
+  xlim(c(-120, -116)) + ylim(c(35, 33))
++
+  geom_sf(data = ca_homicides, aes(color = victim_race, shape = disposition)) +
+   
+  
 
 
-          + 
-  scale_color_viridis(name = "Race Groups") 
-color = victim_race, shape = disposition
+           
+   scale_color_viridis(name = "Race Groups") +
+     
 ```
 
 ```{r}
