@@ -32,7 +32,6 @@ Create a map showing the locations of the homicides in that city, using the sf f
  
 Use tigris to download boundaries for some sub-city geography (e.g., tracts, block groups, county subdivisions) to show as a layer underneath the points showing homicides. 
 
-Use different facets for solved versus unsolved homicides and different colors to show the three race groups with the highest number of homicides for that city (you may find the fct_lump function from forcats useful for this).
 
 I used tigris to set county boundaries within California to represent the different subdivisions within the state. 
 
@@ -49,39 +48,34 @@ ggplot() +
   geom_sf(data = ca_counties, color = "lightgray")
 
 ```
-```{r, LA}
 
-la_county <- counties(state = "CA", cb = TRUE, class = "sf") 
-  
-ggplot() + 
-  geom_sf(data = la_county, color = "lightgray")
-
-```
 
 ```{r}
-
 ca_homicides <- losAngeles %>% 
   select(uid, reported_date, victim_race, lat, lon, disposition)
-  
 
-ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat"))
-  
-  
-filter(.data = ca_homicides, !missing(victim_race))
+ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat")) %>%
+  st_set_crs(4269)
 
 ```
 
-
+Use different facets for solved versus unsolved homicides 
+Use different colors to show the three race groups with the highest number of homicides for that city 
+(you may find the fct_lump function from forcats useful for this).
 
 ```{r}
 
 ggplot() +
   geom_sf(data = ca_counties, color = "lightgray", fill = "gray") +
-  xlim(c(-119, -117.5)) + ylim(c(33.6, 34.5)) +
-  geom_sf(data = ca_homicides, aes(color = victim_race, shape = disposition))
+  xlim(c(-118.8, -118)) + ylim(c(33.7, 34.35)) +
+  geom_sf(data = ca_homicides, mapping = aes(color = victim_race,
+                                             shape = disposition,
+                                             stat = "sf"))
 
-           
-   scale_color_viridis(name = "Race Groups") +
+         
+
+
+scale_color_viridis(name = "Race Groups") 
      
 ```
 
