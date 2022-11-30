@@ -24,7 +24,7 @@ library(forcats)
 losAngeles <- homicide_data %>%
   mutate(city_name = str_c(homicide_data$city, homicide_data$state, sep = ", ")) %>%
   filter(city_name == "Los Angeles, CA") %>%
-  mutate(status = case_when(
+  mutate(Status = case_when(
     grepl("Closed by arrest", disposition) ~ "solved", 
     grepl("Closed without arrest", disposition) ~ "unsolved",
     grepl("Open/No arrest", disposition) ~ "unsolved",
@@ -63,7 +63,7 @@ ggplot() +
 
 ```{r}
 la_homicides <- losAngeles %>% 
-  select(uid, reported_date, homicide_race, lat, lon, status)
+  select(uid, reported_date, homicide_race, lat, lon, Status)
 
 la_homicides <- st_as_sf(la_homicides, coords = c("lon", "lat")) %>%
   st_set_crs(4269)
@@ -77,9 +77,12 @@ Use different colors to show the three race groups with the highest number of ho
 ggplot() +
   geom_sf(data = ca_counties, color = "lightgray", fill = "gray") +
   xlim(c(-118.8, -118)) + ylim(c(33.7, 34.35)) +
-  geom_sf(data = la_homicides, mapping = aes(color = homicide_race,
-                                             shape = status)) +
+  geom_sf(data = la_homicides, aes(color = homicide_race,
+                                   fill = homicide_race,
+                                   shape = Status)) +
+  scale_fill_discrete(name = "Race") +
+  scale_color_discrete(name = "Race") +
+  scale_shape_manual(values = c(18, 8)) +
   ggtitle("Location of homicides in Los Angeles, CA")
-    
 ```
 
