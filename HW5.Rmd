@@ -1,0 +1,79 @@
+---
+title: "Homework 5"
+author: "Alison Barbee"
+date: "2022-11-30"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = FALSE)
+```
+
+
+```{r data}
+library(readr)
+
+homicide_data <- read_csv("data/homicide-data.csv")
+```
+
+#Pick one city in the data. 
+
+```{r Los Angeles}
+library(tidyverse)
+
+losAngeles <- homicide_data %>%
+  mutate(city_name = str_c(homicide_data$city, homicide_data$state, sep = ", ")) %>%
+  filter(city_name == "Los Angeles, CA")
+```
+
+#Mapping it out
+
+Create a map showing the locations of the homicides in that city, using the sf framework discussed in class.
+ 
+Use tigris to download boundaries for some sub-city geography (e.g., tracts, block groups, county subdivisions) to show as a layer underneath the points showing homicides. 
+
+
+I used tigris to set county boundaries within California to represent the different subdivisions within the state. 
+
+```{r Map, tigris_use_cache = TRUE}
+library(sf)
+library(tigris)
+library(ggplot2)
+library(viridis)
+library(MAP)
+
+ca_counties <- counties(state = "CA", cb = TRUE, class = "sf")
+
+ggplot() + 
+  geom_sf(data = ca_counties, color = "lightgray")
+
+```
+
+
+```{r}
+ca_homicides <- losAngeles %>% 
+  select(uid, reported_date, victim_race, lat, lon, disposition)
+
+ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat")) %>%
+  st_set_crs(4269)
+
+```
+
+Use different facets for solved versus unsolved homicides 
+Use different colors to show the three race groups with the highest number of homicides for that city 
+(you may find the fct_lump function from forcats useful for this).
+
+```{r}
+
+ggplot() +
+  geom_sf(data = ca_counties, color = "lightgray", fill = "gray") +
+  xlim(c(-118.8, -118)) + ylim(c(33.7, 34.35)) +
+  geom_sf(data = ca_homicides, mapping = aes(color = victim_race,
+                                             shape = disposition,
+                                             stat = "sf"))
+     
+```
+
+```{r}
+
+```
