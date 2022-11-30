@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, error = FALSE)
 ```{r data}
 library(readr)
 
-homicide_data <- read_csv("data/homicide-data.csv")
+homicide_data <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv")
 ```
 
 #Picked Los Angeles as my primary city  
@@ -60,7 +60,6 @@ ggplot() +
   geom_sf(data = ca_counties, color = "lightgray")
 ```
 
-
 ```{r}
 la_homicides <- losAngeles %>% 
   select(uid, reported_date, homicide_race, lat, lon, Status)
@@ -69,9 +68,6 @@ la_homicides <- st_as_sf(la_homicides, coords = c("lon", "lat")) %>%
   st_set_crs(4269)
 
 ```
-
-Use different colors to show the three race groups with the highest number of homicides for that city 
-(you may find the fct_lump function from forcats useful for this).
 
 ```{r, final map}
 ggplot() +
