@@ -24,9 +24,11 @@ library(tidyverse)
 losAngeles <- homicide_data %>%
   mutate(city_name = str_c(homicide_data$city, homicide_data$state, sep = ", ")) %>%
   filter(city_name == "Los Angeles, CA") %>%
-  rename() %>%
-  select(uid, victom_race, city, state, lat, lon, disposition, city_name)
-
+  mutate(status = case_when(
+    grepl("Closed by arrest", disposition) ~ "solved", 
+    grepl("Closed without arrest", disposition) ~ "unsolved",
+    grepl("Open/No arrest", disposition) ~ "unsolved",
+        TRUE ~ "NA"))
 ```
 
 #Mapping it out
@@ -55,7 +57,7 @@ ggplot() +
 
 ```{r}
 ca_homicides <- losAngeles %>% 
-  select(uid, reported_date, victim_race, lat, lon, disposition)
+  select(uid, reported_date, victim_race, lat, lon, status)
 
 ca_homicides <- st_as_sf(ca_homicides, coords = c("lon", "lat")) %>%
   st_set_crs(4269)
@@ -72,7 +74,7 @@ ggplot() +
   geom_sf(data = ca_counties, color = "lightgray", fill = "gray") +
   xlim(c(-118.8, -118)) + ylim(c(33.7, 34.35)) +
   geom_sf(data = ca_homicides, mapping = aes(color = victim_race,
-                                             shape = disposition,
+                                             shape = status,
                                              stat = "sf")) +
   ggtitle("Location of homicides in Los Angeles")
     
