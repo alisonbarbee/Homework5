@@ -71,11 +71,6 @@ ggplot() +
   geom_sf(data = ca_homicides, mapping = aes(color = victim_race,
                                              shape = disposition,
                                              stat = "sf"))
-
-         
-
-
-scale_color_viridis(name = "Race Groups") 
      
 ```
 
