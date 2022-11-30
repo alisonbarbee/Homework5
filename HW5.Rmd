@@ -24,7 +24,8 @@ library(tidyverse)
 losAngeles <- homicide_data %>%
   mutate(city_name = str_c(homicide_data$city, homicide_data$state, sep = ", ")) %>%
   filter(city_name == "Los Angeles, CA") %>%
-  rename()
+  rename() %>%
+  select(uid, victom_race, city, state, lat, lon, disposition, city_name)
 
 ```
 
